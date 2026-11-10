@@ -72,7 +72,7 @@ function create() {
       showSaveDialog: async () => nextOf(ui.save, undefined),
       showInputBox: async (o) => { const v = nextOf(ui.input, undefined); if (v !== undefined && o && o.validateInput) { const e = o.validateInput(v); if (e) throw new Error(e); } return v; },
       showQuickPick: async (items) => { const f = nextOf(ui.quick, undefined); return typeof f === 'function' ? f(await items) : f; },
-      showTextDocument: async (d) => { log.opened.push(d); return {}; },
+      showTextDocument: async (d, o) => { log.opened.push(d); (log.columns = log.columns || []).push(o && o.viewColumn); return {}; },
       withProgress: async (o, fn) => { log.progress.push(o.title); const tok = { isCancellationRequested: false, onCancellationRequested: (f) => { tok.cb = f; return { dispose() {} }; } }; ui.lastToken = tok; return fn({ report: (r) => log.progress.push(r.message) }, tok); },
       createOutputChannel: () => ({ appendLine() {}, dispose() {} }),
     },

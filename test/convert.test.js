@@ -116,7 +116,7 @@ test('Word: broken XML, a .doc that is random bytes and an empty file give messa
   // XML that is cut inside a tag: a "damaged" warning (REFUSED), not a converter error
   const e3 = await fails(B.docx({ body: '<w:p><w:r><w:t>unclosed <<<' }), 'broken-xml.docx');
   assert.strictEqual(e3.code, 'REFUSED');
-  assert.match(e3.message, /^The Word file is damaged and could not be read \(/);
+  assert.strictEqual(e3.message, 'The Word file is damaged and could not be read: its XML is broken. Open it in its app, save it again and convert that copy.');
 });
 
 test('Password-protected Office file and old PowerPoint give a clear message', async () => {

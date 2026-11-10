@@ -40,7 +40,10 @@ async function convert(buf, opts = {}) {
     if (e && e.code) throw e;
     const msg = String((e && e.message) || e);
     // malformed XML or a broken ZIP inside the file: a damaged file, not a converter failure
-    if (DAMAGED.test(msg)) throw refused(`The ${LABEL[d.kind] || 'file'} is damaged and could not be read (${msg.replace(/\s+/g, ' ').slice(0, 120)}). Open it in its app, save it again and convert that copy.`);
+    if (DAMAGED.test(msg)) {
+      const part = /zip|central directory|invalid (distance|block|stored)|end of data|eof/i.test(msg) ? 'its ZIP container is broken' : 'its XML is broken';
+      throw refused(`The ${LABEL[d.kind] || 'file'} is damaged and could not be read: ${part}. Open it in its app, save it again and convert that copy.`);
+    }
     const err = new Error(`${String((e && e.message) || e).slice(0, 300)}`);
     err.code = 'CONVERT';
     throw err;
@@ -48,7 +51,7 @@ async function convert(buf, opts = {}) {
   return {
     kind: d.kind,
     markdown: r.markdown,
-    title: r.title || '',
+    title: String(r.title || '').replace(/\s+/g, ' ').trim().slice(0, 300),
     headings: r.headings || [],
     meta: r.meta || {},
     notes: (r.notes || []).concat(assets.skipped ? [`${assets.skipped} images were not saved (more than 2,000 images or 512 MB).`] : []),

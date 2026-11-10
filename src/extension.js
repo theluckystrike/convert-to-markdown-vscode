@@ -103,6 +103,13 @@ function showNotes(name, r) {
   if (r.notes && r.notes.length) vscode.window.showInformationMessage(`${name}: ${r.notes.join(' ')}`);
 }
 
+/** Beside the open editor; with no editor open (converted from the Explorer) the active group, not an empty one. */
+function besideColumn() {
+  let open = false;
+  try { open = !!(vscode.window.tabGroups.activeTabGroup && vscode.window.tabGroups.activeTabGroup.activeTab); } catch { open = !!vscode.window.activeTextEditor; }
+  return open ? vscode.ViewColumn.Beside : vscode.ViewColumn.Active;
+}
+
 async function uniqueUntitled(dirUri, stem) {
   const open = new Set(vscode.workspace.textDocuments.map((d) => d.uri.toString()));
   for (let i = 1; i < 1000; i++) {
@@ -143,7 +150,7 @@ async function showMarkdown(uri, r) {
       doc = await vscode.workspace.openTextDocument({ language: 'markdown', content: r.markdown });
     }
   }
-  await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside, preview: false });
+  await vscode.window.showTextDocument(doc, { viewColumn: besideColumn(), preview: false });
   return doc;
 }
 
@@ -288,8 +295,9 @@ async function folderCommand(arg) {
   await fs.promises.mkdir(outRoot, { recursive: true });
   await fs.promises.writeFile(reportPath, report, 'utf8');
   await vscode.window.showTextDocument(vscode.Uri.file(reportPath), { preview: false });
-  if (n('converted')) { await pro.produced('folder'); rating.success(vscode.Uri.file(reportPath)); }
-  vscode.window.setStatusBarMessage(`Converted ${n('converted')} of ${files.length} files to Markdown${stopped ? ' (stopped)' : ''}.`, 8000);
+  const doneText = `Converted ${n('converted')} of ${files.length} files to Markdown${stopped ? ' (stopped)' : ''}.`;
+  vscode.window.setStatusBarMessage(doneText, 8000);
+  if (n('converted')) { await pro.produced('folder', doneText); rating.success(vscode.Uri.file(reportPath)); }
 }
 
 // ---------------- Zovo Pro 2: extract images ----------------
@@ -312,10 +320,11 @@ async function imagesCommand(arg) {
     for (const im of r.images) await fs.promises.writeFile(path.join(dir, im.name), Buffer.from(im.data));
   }
   await fs.promises.writeFile(mdPath, r.markdown, 'utf8');
-  await vscode.window.showTextDocument(vscode.Uri.file(mdPath), { viewColumn: vscode.ViewColumn.Beside, preview: false });
+  await vscode.window.showTextDocument(vscode.Uri.file(mdPath), { viewColumn: besideColumn(), preview: false });
   if (r.images.length) {
-    await pro.produced('images');
-    vscode.window.setStatusBarMessage(`Saved ${path.basename(mdPath)} and ${r.images.length} image${r.images.length === 1 ? '' : 's'} in ${assetsDir}.`, 8000);
+    const doneText = `Saved ${path.basename(mdPath)} and ${r.images.length} image${r.images.length === 1 ? '' : 's'} in ${assetsDir}.`;
+    vscode.window.setStatusBarMessage(doneText, 8000);
+    await pro.produced('images', doneText);
   } else {
     vscode.window.showInformationMessage(`${name} has no images to extract. The Markdown was saved; no free try was used.`);
   }
@@ -359,9 +368,10 @@ async function llmCommand(arg) {
     for (const f of files) await fs.promises.writeFile(path.join(target.fsPath, f.name), f.text, 'utf8');
     open = vscode.Uri.file(path.join(target.fsPath, files[0].name));
   }
-  await vscode.window.showTextDocument(open, { viewColumn: vscode.ViewColumn.Beside, preview: false });
-  await pro.produced('llm');
-  vscode.window.setStatusBarMessage(`${chunks.length} chunk${chunks.length === 1 ? '' : 's'}, about ${tokens.toLocaleString('en-US')} tokens in all (estimate: characters / 4).`, 10000);
+  await vscode.window.showTextDocument(open, { viewColumn: besideColumn(), preview: false });
+  const doneText = `${chunks.length} chunk${chunks.length === 1 ? '' : 's'}, about ${tokens.toLocaleString('en-US')} tokens in all (estimate: characters / 4).`;
+  vscode.window.setStatusBarMessage(doneText, 10000);
+  await pro.produced('llm', doneText);
   rating.success(uri);
 }
 

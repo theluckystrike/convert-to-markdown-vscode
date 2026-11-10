@@ -58,7 +58,11 @@ test('activation registers the commands, makes no network call and shows nothing
     s.vscode.window.tabGroups.activeTabGroup.activeTab = { input: { uri: s.vscode.Uri.file(PPTX) } };
     await s.commands.get('toMarkdown.convert')();
     assert.match(s.log.opened.at(-1).getText(), /## Slide 1: Launch Review/);
+    assert.strictEqual(s.log.columns.at(-1), s.vscode.ViewColumn.Beside, 'beside the open source file');
     s.vscode.window.tabGroups.activeTabGroup.activeTab = undefined;
+    // nothing open (converted from the Explorer): the active group, so no empty group is left on the left
+    await s.commands.get('toMarkdown.convert')(s.vscode.Uri.file(PPTX));
+    assert.strictEqual(s.log.columns.at(-1), s.vscode.ViewColumn.Active);
     assert.deepStrictEqual(nw.calls, []);
     assert.deepStrictEqual(s.log.external, []);
     assert.deepStrictEqual([s.log.warn.length, s.log.error.length], [0, 0]);
@@ -129,6 +133,8 @@ test('Pro: Convert a whole folder: mirrored tree, report, skip/overwrite; Escape
     assert.match(report, /\| sub\/report\.pdf \| converted \| \[sub\/report\.md\]\(<sub\/report\.md>\) \| 2 pages/);
     assert.strictEqual(tries(s).folder, 1);
     assert.ok(s.log.status.some((t) => /free try 1 of 3/.test(t)));
+    // the last status message has the result and the try count (one does not hide the other)
+    assert.match(s.log.status.at(-1), /^Converted 4 of 4 files to Markdown\. Zovo Pro: free try 1 of 3 of "Convert a whole folder" used, 2 left on this computer\.$/);
     // again: skip all existing -> nothing converted -> no try
     s.ui.quick.push(pick('mirror'), pick('skip'));
     await s.commands.get('toMarkdown.convertFolder')(s.vscode.Uri.file(root));

@@ -42,14 +42,17 @@ function createPro({ vscode, context, license, prefix = 'toMarkdown', productNam
     return !!(await lic.requirePro(feat.title, { detail: feat.detail, triesUsed: used(f), tools: TOOLS }));
   }
 
-  /** After the tool produced its output: counts one free try (nothing when licensed). */
-  async function produced(f) {
+  /**
+   * After the tool produced its output: counts one free try (nothing when licensed). `done` is the tool's own status
+   * text; the status bar shows it together with the try count, so neither message hides the other.
+   */
+  async function produced(f, done = '') {
     if (licensed() || !FEATURES[f]) return;
     const m = { ...(context.globalState.get(TRIAL_KEY) || {}) };
     m[f] = used(f) + 1;
     await context.globalState.update(TRIAL_KEY, m);
     const l = left(f);
-    vscode.window.setStatusBarMessage(`Zovo Pro: free try ${used(f)} of ${TRIAL_USES} of "${FEATURES[f].title}" used${l ? `, ${l} left` : ''} on this computer.`, 8000);
+    vscode.window.setStatusBarMessage(`${done ? `${done} ` : ''}Zovo Pro: free try ${used(f)} of ${TRIAL_USES} of "${FEATURES[f].title}" used${l ? `, ${l} left` : ''} on this computer.`, 10000);
     emitter.fire(false);
   }
 
