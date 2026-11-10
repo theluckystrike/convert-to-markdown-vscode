@@ -53,7 +53,7 @@ const PAGE_NO = /^\s*(page\s*)?\d{1,5}(\s*(of|\/)\s*\d{1,5})?\s*$/i;
 function refused(msg) { const e = new Error(msg); e.code = 'REFUSED'; return e; }
 
 // ---------------- lines ----------------
-function toLines(items, fonts) {
+function toLines(items, fonts, pageWidth = 612) {
   const parts = [];
   for (const it of items) {
     if (typeof it.str !== 'string' || !it.str.trim()) continue; // pdf.js adds a ' ' item for each gap; gaps are measured here
@@ -70,6 +70,8 @@ function toLines(items, fonts) {
     else lines.push({ y: p.y, size: p.size, items: [p] });
     if (lines.length > 20000) break;
   }
+  const ordered = splitColumns(lines, pageWidth);
+  if (ordered) { lines.length = 0; lines.push(...ordered); }
   for (const l of lines) {
     l.items.sort((a, b) => a.x - b.x);
     const segs = [];
@@ -90,13 +92,55 @@ function toLines(items, fonts) {
     for (const s of segs) s.text = s.text.replace(/\s+/g, ' ').trim();
     l.segs = segs.filter((s) => s.text);
     l.x = l.segs.length ? l.segs[0].x : 0;
-    l.size = l.items.reduce((m, p) => Math.max(m, p.size), 0);
+    // the size most of the line's characters have (a run-in bold heading does not make the whole line a heading)
+    const by = new Map();
+    for (const p of l.items) by.set(p.size, (by.get(p.size) || 0) + p.s.trim().length);
+    let best = -1;
+    for (const [sz, n] of by) if (n > best || (n === best && sz > l.size)) { best = n; l.size = sz; }
     l.text = l.segs.map((s) => s.text).join(' ');
     const chars = l.segs.reduce((n, s) => n + s.chars, 0);
     l.bold = chars > 0 && l.segs.reduce((n, s) => n + s.boldChars, 0) >= chars * 0.9;
     delete l.items;
   }
   return lines.filter((l) => l.text);
+}
+
+/**
+ * Two-column page: find a vertical gutter between 30 % and 70 % of the page width that almost no text crosses, with
+ * long text on both sides (short cells on both sides are a table, not columns). Returns the lines in reading order
+ * (full-width lines above the columns, then the left column, then the right one), or null for a one-column page.
+ */
+function splitColumns(lines, pageWidth) {
+  if (lines.length < 10) return null;
+  let best = null;
+  for (let x = pageWidth * 0.3; x <= pageWidth * 0.7; x += 2) {
+    let cross = 0, left = 0, right = 0, lc = 0, rc = 0;
+    for (const l of lines) {
+      let c = false, L = 0, R = 0;
+      for (const p of l.items) {
+        if (p.x < x - 1 && p.x + p.w > x + 1) { c = true; break; }
+        if (p.x + p.w <= x + 1) L += p.s.length; else R += p.s.length;
+      }
+      if (c) cross++;
+      else { if (L) { left++; lc += L; } if (R) { right++; rc += R; } }
+    }
+    if (!best || cross < best.cross) best = { x, cross, left, right, lc, rc };
+  }
+  const n = lines.length;
+  if (!best || best.cross > n * 0.15 || best.left < n * 0.3 || best.right < n * 0.3) return null;
+  if (best.lc / best.left < 25 || best.rc / best.right < 25) return null; // short cells: a table
+  const x = best.x;
+  const top = [], left = [], right = [];
+  let firstSplit = null;
+  for (const l of lines) {
+    const crossing = l.items.some((p) => p.x < x - 1 && p.x + p.w > x + 1);
+    if (crossing) { (firstSplit === null ? top : left).push(l); continue; }
+    if (firstSplit === null) firstSplit = l.y;
+    const L = l.items.filter((p) => p.x + p.w <= x + 1), R = l.items.filter((p) => p.x + p.w > x + 1);
+    if (L.length) left.push({ y: l.y, size: l.size, items: L });
+    if (R.length) right.push({ y: l.y, size: l.size, items: R });
+  }
+  return [...top, ...left, ...right];
 }
 
 /** Two-column page: most lines have 2 long segments split near the same x. Returns lines in reading order. */
@@ -269,8 +313,7 @@ async function pdf(buf, ctx) {
       try { ops = await page.getOperatorList(); } catch { ops = null; }
       const tc = await page.getTextContent();
       const fonts = (name) => { try { return page.commonObjs.has(name) ? page.commonObjs.get(name) : null; } catch { return null; } };
-      let lines = toLines(tc.items, fonts);
-      lines = reorderColumns(lines, width);
+      const lines = toLines(tc.items, fonts, width);
       for (const l of lines) { chars += l.text.length; sizeChars.set(l.size, (sizeChars.get(l.size) || 0) + l.text.length); }
       // images: placeholders or files, placed by their top edge among the lines
       const imgs = [];

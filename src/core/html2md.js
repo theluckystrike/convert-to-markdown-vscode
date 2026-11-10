@@ -205,6 +205,15 @@ class Writer {
   }
 
   table(node, depth) {
+    if (this.inCell) { // a table inside a table cell: its text, cells separated by " / "
+      const cells = [];
+      const stack = [node];
+      while (stack.length && cells.length < 2000) {
+        const n = stack.shift();
+        for (const c of n.childNodes || []) { const t = tag(c); if (t === 'td' || t === 'th') cells.push(textContent(c).replace(/\s+/g, ' ').trim()); else if (!isText(c)) stack.push(c); }
+      }
+      return M.escapeText(cells.filter(Boolean).join(' / '));
+    }
     const rows = [];
     let headerRow = false;
     const stack = [node];
@@ -223,7 +232,9 @@ class Writer {
         const t = tag(td);
         if (t !== 'td' && t !== 'th') continue;
         if (rows.length === 0 && t === 'th') headerRow = true;
+        this.inCell = (this.inCell || 0) + 1;
         const parts = this.blocks(td, depth + 1).join(' ').replace(/\n+/g, ' ');
+        this.inCell--;
         row.push({ md: parts });
         const span = Math.min(Number(attr(td, 'colspan')) || 1, 50);
         for (let i = 1; i < span; i++) row.push({ md: '' });
