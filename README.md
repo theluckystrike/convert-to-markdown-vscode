@@ -39,7 +39,7 @@ Zovo Pro adds three tools. Each has 3 free tries on your computer; a try counts 
 
 | Pro tool | What it does |
 |---|---|
-| Convert a whole folder | Every supported file in a folder and its subfolders becomes a `.md` file in a mirrored folder (or next to each file), with progress, Cancel, a skip-or-overwrite choice for existing files and a `_conversion-report.md` summary. |
+| Convert a whole folder | Every supported file in a folder and its subfolders becomes a `.md` file in a mirrored folder (or next to each file), with progress, Cancel, a skip-or-overwrite choice for existing files and a `_conversion-report.md` summary. Files that share a name keep their type in the `.md` name (`report.pdf.md`, `report.docx.md`), so none is lost. |
 | Extract images | Saves the pictures of a Word, PowerPoint, PDF, ODT or EPUB file to a `name_assets` folder next to the `.md` and links them with relative paths, so the Markdown shows them. |
 | LLM-ready output | YAML front matter (title, source file, pages or slides, date), the text split into chunks at headings with a token estimate for each (characters / 4), saved as one Markdown file per chunk or as one JSONL file. |
 

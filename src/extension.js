@@ -218,6 +218,27 @@ async function listSources(root, skipUnder, cancelled) {
   return out.sort();
 }
 
+// One .md path per source file. Files in one folder that share a name (report.pdf, report.docx) keep the source
+// type in the name (report.pdf.md, report.docx.md), so no file overwrites or skips another. Names are compared
+// without case, as on the default macOS and Windows file systems.
+function folderTargets(files, root, outRoot) {
+  const dirOf = (f) => path.join(outRoot, path.relative(root, path.dirname(f)));
+  const key = (p) => p.toLowerCase();
+  const count = new Map();
+  for (const f of files) { const k = key(path.join(dirOf(f), stemOf(path.basename(f)))); count.set(k, (count.get(k) || 0) + 1); }
+  const used = new Set();
+  const map = new Map();
+  for (const f of files) {
+    const base = path.basename(f);
+    const stem = count.get(key(path.join(dirOf(f), stemOf(base)))) > 1 ? base : stemOf(base);
+    let out = path.join(dirOf(f), `${stem}.md`);
+    for (let i = 2; used.has(key(out)); i++) out = path.join(dirOf(f), `${stem} (${i}).md`);
+    used.add(key(out));
+    map.set(f, out);
+  }
+  return map;
+}
+
 async function folderCommand(arg) {
   if (!(await pro.allowed('folder'))) return;
   let root = arg && arg.scheme === 'file' ? arg.fsPath : null;
@@ -243,8 +264,10 @@ async function folderCommand(arg) {
   }
   const files = await listSources(root, outRoot === root ? null : outRoot, () => false);
   if (!files.length) { vscode.window.showInformationMessage(`No PDF, Word, PowerPoint, Excel, CSV, HTML, EPUB, ODT or RTF files in ${name}. No free try was used.`); return; }
-  const targetOfFile = (f) => path.join(outRoot, path.relative(root, path.dirname(f)), `${stemOf(path.basename(f))}.md`);
-  const existing = files.filter((f) => fs.existsSync(targetOfFile(f))).length;
+  const targets = folderTargets(files, root, outRoot);
+  const targetOfFile = (f) => targets.get(f);
+  const before = new Set(files.filter((f) => fs.existsSync(targetOfFile(f))));
+  const existing = before.size;
   let overwrite = false;
   if (existing) {
     const p = await vscode.window.showQuickPick([
@@ -264,7 +287,7 @@ async function folderCommand(arg) {
       const rel = path.relative(root, f);
       const out = targetOfFile(f);
       progress.report({ message: `${i + 1} of ${files.length}: ${rel}`, increment: 100 / files.length });
-      if (!overwrite && fs.existsSync(out)) { rows.push({ rel, status: 'skipped', note: '.md exists' }); continue; }
+      if (!overwrite && before.has(f)) { rows.push({ rel, status: 'skipped', note: '.md exists' }); continue; }
       try {
         const r = await convertUri(vscode.Uri.file(f), { token });
         await fs.promises.mkdir(path.dirname(out), { recursive: true });
@@ -398,4 +421,4 @@ function activate(context) {
 
 function deactivate() {}
 
-module.exports = { activate, deactivate, listSources, IMAGE_KINDS };
+module.exports = { activate, deactivate, listSources, folderTargets, IMAGE_KINDS };

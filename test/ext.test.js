@@ -163,6 +163,52 @@ test('Pro: Convert a whole folder: mirrored tree, report, skip/overwrite; Escape
   } finally { s.restore(); }
 });
 
+test('Pro: Convert a whole folder keeps every file when names repeat: x.docx + x.pptx + x.xlsx + X.pdf give 4 .md files; only files that existed before the run are skipped', async () => {
+  const s = loadExtension();
+  try {
+    s.ext.activate(s.context);
+    const root = path.join(dir, 'same');
+    file('same/poi-sample.docx', B.sampleDocx());
+    file('same/poi-sample.pptx', B.samplePptx());
+    file('same/poi-sample.xlsx', B.sampleXlsx());
+    file('same/sub/POI-sample.pdf', B.samplePdf());
+    file('same/sub/poi-sample.pdf.docx', B.sampleDocx());
+    file('same/report.pdf', B.samplePdf());
+    const outRoot = path.join(dir, 'same-markdown');
+    s.ui.quick.push(pick('mirror'));
+    await s.commands.get('toMarkdown.convertFolder')(s.vscode.Uri.file(root));
+    const names = fs.readdirSync(outRoot).sort();
+    assert.deepStrictEqual(names, ['_conversion-report.md', 'poi-sample.docx.md', 'poi-sample.pptx.md', 'poi-sample.xlsx.md', 'report.md', 'sub']);
+    assert.deepStrictEqual(fs.readdirSync(path.join(outRoot, 'sub')).sort(), ['POI-sample.md', 'poi-sample.pdf.md']);
+    assert.match(fs.readFileSync(path.join(outRoot, 'poi-sample.docx.md'), 'utf8'), /Project Plan/);
+    assert.match(fs.readFileSync(path.join(outRoot, 'poi-sample.pptx.md'), 'utf8'), /## Slide 1: Launch Review/);
+    const report = fs.readFileSync(path.join(outRoot, '_conversion-report.md'), 'utf8');
+    assert.match(report, /- Converted: 6, skipped: 0, failed: 0/);
+    assert.ok(!/\.md exists/.test(report), 'nothing skipped by a file written in the same run');
+    assert.strictEqual(tries(s).folder, 1);
+    // a .md made by hand before the run is skipped (or overwritten) as before; the others still convert
+    fs.rmSync(outRoot, { recursive: true, force: true });
+    fs.mkdirSync(outRoot);
+    fs.writeFileSync(path.join(outRoot, 'poi-sample.pptx.md'), 'my notes');
+    s.ui.quick.push(pick('mirror'), pick('skip'));
+    await s.commands.get('toMarkdown.convertFolder')(s.vscode.Uri.file(root));
+    assert.strictEqual(fs.readFileSync(path.join(outRoot, 'poi-sample.pptx.md'), 'utf8'), 'my notes');
+    assert.match(fs.readFileSync(path.join(outRoot, '_conversion-report.md'), 'utf8'), /- Converted: 5, skipped: 1, failed: 0/);
+    assert.strictEqual(tries(s).folder, 2);
+  } finally { s.restore(); }
+});
+
+test('folderTargets: unique names in plain folders, the source type only where a name repeats, compared without case', () => {
+  const s = loadExtension();
+  const { folderTargets } = s.ext;
+  s.restore();
+  const r = '/w/docs', o = '/w/docs-markdown';
+  const m = folderTargets([`${r}/a.pdf`, `${r}/b.docx`, `${r}/A.pptx`, `${r}/s/a.pdf`, `${r}/c.tar.gz.pdf`], r, o);
+  assert.deepStrictEqual([...m.values()], [`${o}/a.pdf.md`, `${o}/b.md`, `${o}/A.pptx.md`, `${o}/s/a.md`, `${o}/c.tar.gz.md`]);
+  const beside = folderTargets([`${r}/x.docx`, `${r}/x.docx.pdf`, `${r}/x.pdf`], r, r);
+  assert.strictEqual(new Set([...beside.values()].map((p) => p.toLowerCase())).size, 3, 'never two sources on one .md');
+});
+
 test('Pro: Extract images writes name.md and name_assets; Escape and a file without images use no try', async () => {
   const s = loadExtension();
   try {
