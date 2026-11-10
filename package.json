@@ -1,0 +1,296 @@
+{
+  "name": "zovo-convert-to-markdown",
+  "displayName": "Convert to Markdown: PDF to Markdown, PPTX to Markdown, DOCX to Markdown",
+  "description": "Convert to Markdown inside VS Code: PDF to Markdown, Word (DOCX) to Markdown and PowerPoint (PPTX) to Markdown, plus Excel, CSV, HTML, EPUB, ODT and RTF. Right-click a file and get clean Markdown with headings, lists, tables, links and slide notes. Nothing to install, no Python, no network.",
+  "version": "0.1.0",
+  "publisher": "zovo",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1B2A4A",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/convert-to-markdown-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/theluckystrike/convert-to-markdown-vscode/issues"
+  },
+  "homepage": "https://github.com/theluckystrike/convert-to-markdown-vscode#readme",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Formatters",
+    "Other",
+    "Data Science"
+  ],
+  "keywords": [
+    "convert to markdown",
+    "pdf to markdown",
+    "pptx to markdown",
+    "docx to markdown",
+    "word to markdown",
+    "powerpoint to markdown",
+    "office to markdown",
+    "document to markdown",
+    "file to markdown",
+    "html to markdown",
+    "epub to markdown",
+    "excel to markdown",
+    "csv to markdown",
+    "markdown converter",
+    "md",
+    "llm",
+    "rag"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": {
+      "supported": "limited",
+      "description": "Converting works on any file the editor can read; the folder tool and Extract images need files on this computer."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "toMarkdown.convert",
+        "title": "Convert to Markdown",
+        "category": "Convert to Markdown",
+        "icon": "$(markdown)"
+      },
+      {
+        "command": "toMarkdown.copyAsMarkdown",
+        "title": "Copy as Markdown",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.convertFolder",
+        "title": "Convert a Folder to Markdown (Pro)",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.convertWithImages",
+        "title": "Convert to Markdown with Images (Pro)",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.convertForLlm",
+        "title": "Convert to LLM-ready Markdown Chunks (Pro)",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.convertSample",
+        "title": "Convert a sample file",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.openWalkthrough",
+        "title": "Get started",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.supportDeveloper",
+        "title": "Support the developer",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.moreViewers",
+        "title": "More free viewers",
+        "category": "Convert to Markdown"
+      },
+      {
+        "command": "toMarkdown.getPro",
+        "title": "Get Zovo Pro (USD 19 once, all 22 Zovo extensions)",
+        "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.payWithPayPal",
+        "title": "Pay for Zovo Pro with PayPal (USD 19, team of 5 USD 59)",
+        "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.unlockWithSponsors",
+        "title": "I already paid: unlock with GitHub Sponsors",
+        "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.enterLicenseKey",
+        "title": "Enter Zovo Pro license key",
+        "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.removeLicense",
+        "title": "Remove Zovo Pro from this editor",
+        "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.payByCard",
+        "title": "Pay for Zovo Pro by card (USD 19)",
+        "category": "Zovo Pro"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "toMarkdown.convert",
+          "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i",
+          "group": "navigation@90"
+        },
+        {
+          "command": "toMarkdown.copyAsMarkdown",
+          "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i",
+          "group": "6_copypath@90"
+        },
+        {
+          "command": "toMarkdown.convertWithImages",
+          "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|pptx|pptm|ppsx|potx|odt|ott|epub|html|htm|xhtml)$/i && config.toMarkdown.showProTools",
+          "group": "navigation@91"
+        },
+        {
+          "command": "toMarkdown.convertForLlm",
+          "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i && config.toMarkdown.showProTools",
+          "group": "navigation@92"
+        },
+        {
+          "command": "toMarkdown.convertFolder",
+          "when": "explorerResourceIsFolder && config.toMarkdown.showProTools",
+          "group": "navigation@90"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "toMarkdown.convert",
+          "when": "resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i",
+          "group": "1_markdown@1"
+        },
+        {
+          "command": "toMarkdown.copyAsMarkdown",
+          "when": "resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i",
+          "group": "1_markdown@2"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "toMarkdown.convertFolder",
+          "when": "config.toMarkdown.showProTools"
+        },
+        {
+          "command": "toMarkdown.convertWithImages",
+          "when": "config.toMarkdown.showProTools"
+        },
+        {
+          "command": "toMarkdown.convertForLlm",
+          "when": "config.toMarkdown.showProTools"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Convert to Markdown",
+      "properties": {
+        "toMarkdown.output": {
+          "type": "string",
+          "enum": [
+            "untitled",
+            "file"
+          ],
+          "enumDescriptions": [
+            "Open the Markdown as an unsaved document beside the source (save it with Cmd+S / Ctrl+S; the name next to the source is filled in).",
+            "Save <name>.md next to the source file and open it."
+          ],
+          "default": "untitled",
+          "description": "Where Convert to Markdown puts the result."
+        },
+        "toMarkdown.maxFileSizeMB": {
+          "type": "number",
+          "default": 200,
+          "minimum": 1,
+          "maximum": 2048,
+          "description": "Files larger than this are not converted (a message says so)."
+        },
+        "toMarkdown.pdfMaxPages": {
+          "type": "number",
+          "default": 1000,
+          "minimum": 1,
+          "maximum": 100000,
+          "description": "PDF pages converted at most; the Markdown says when a PDF was cut."
+        },
+        "toMarkdown.llmChunkTokens": {
+          "type": "number",
+          "default": 800,
+          "minimum": 100,
+          "maximum": 100000,
+          "description": "LLM-ready output: the largest chunk, in estimated tokens (characters / 4). Sections longer than this are split at paragraphs."
+        },
+        "toMarkdown.showProTools": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Convert a Folder, Extract images and LLM-ready commands (Zovo Pro tools, 3 free tries each). Turn off to hide them."
+        },
+        "toMarkdown.askForRating": {
+          "type": "boolean",
+          "default": true,
+          "description": "Ask once, after a few days of use, whether you want to rate the extension. Never after an error."
+        }
+      }
+    },
+    "walkthroughs": [
+      {
+        "id": "toMarkdown.start",
+        "title": "Convert to Markdown",
+        "description": "Turn PDF, Word, PowerPoint, Excel and other files into Markdown without leaving VS Code.",
+        "steps": [
+          {
+            "id": "convert",
+            "title": "Convert a file",
+            "description": "Right-click a PDF, Word, PowerPoint, Excel, CSV, HTML, EPUB, ODT or RTF file in the Explorer and pick Convert to Markdown. The Markdown opens beside it.\n[Convert a sample Word file](command:toMarkdown.convertSample?%22docx%22)\n[Convert a sample PDF](command:toMarkdown.convertSample?%22pdf%22)",
+            "media": {
+              "markdown": "walkthrough/convert.md"
+            }
+          },
+          {
+            "id": "slides",
+            "title": "Slides and tables",
+            "description": "Each slide becomes a section with its title, bullets, tables and speaker notes. Tables in documents, PDFs and sheets become pipe tables.\n[Convert a sample PowerPoint file](command:toMarkdown.convertSample?%22pptx%22)",
+            "media": {
+              "markdown": "walkthrough/slides.md"
+            }
+          },
+          {
+            "id": "copy",
+            "title": "Copy as Markdown, or save next to the file",
+            "description": "Copy as Markdown puts the result on the clipboard. By default the result opens unsaved; set Output to file to save it next to the source.\n[Open the settings](command:workbench.action.openSettings?%5B%22toMarkdown.output%22%5D)",
+            "media": {
+              "markdown": "walkthrough/copy.md"
+            }
+          },
+          {
+            "id": "zovo-related",
+            "title": "Files that often come with documents",
+            "description": "If your project also has PDF files or Word documents, these free Zovo extensions open them. A link opens the extension page, and you choose there whether to install it.\n[PDF Viewer](command:extension.open?%5B%22zovo.pdf-viewer-dark%22%5D)\n[DOCX Viewer](command:extension.open?%5B%22zovo.docx-viewer-vscode%22%5D)",
+            "media": {
+              "markdown": "walkthrough/related.md"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js",
+    "samples": "node scripts/make_samples.js",
+    "vscode:prepublish": "node scripts/build.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "~1.90.0"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/theluckystrike/sponsorships?tier_id=679878"
+  }
+}

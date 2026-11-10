@@ -1,0 +1,12 @@
+test/**
+scripts/**
+src/worker.js
+.github/**
+icon.svg
+node_modules/**
+dist/*.vsix
+dist/bundled.json
+*.vsix
+*.bak*
+.gitignore
+.vscodeignore

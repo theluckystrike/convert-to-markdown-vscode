@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect x="8" y="8" width="240" height="240" rx="40" fill="#14202B"/>
+  <rect x="8" y="8" width="240" height="240" rx="40" fill="none" stroke="#2F4A63" stroke-width="4"/>
+  <!-- a document (left) turns into a Markdown file (right) -->
+  <path d="M34 52 h62 l22 22 v92 a6 6 0 0 1 -6 6 h-78 a6 6 0 0 1 -6 -6 v-108 a6 6 0 0 1 6 -6 z" fill="#1C2D3C" stroke="#3E5C77" stroke-width="3"/>
+  <path d="M96 52 v16 a6 6 0 0 0 6 6 h16" fill="none" stroke="#3E5C77" stroke-width="3"/>
+  <rect x="42" y="84" width="58" height="10" rx="3" fill="#D04B3B"/>
+  <rect x="42" y="102" width="66" height="8" rx="3" fill="#3794FF"/>
+  <rect x="42" y="118" width="52" height="8" rx="3" fill="#D18616"/>
+  <rect x="42" y="134" width="62" height="8" rx="3" fill="#4EC9B0"/>
+  <rect x="42" y="150" width="44" height="8" rx="3" fill="#B180D7"/>
+  <path d="M124 112 h22 v-12 l20 20 l-20 20 v-12 h-22 z" fill="#9CDCFE"/>
+  <rect x="152" y="70" width="78" height="100" rx="8" fill="#FFFFFF"/>
+  <path d="M164 146 v-50 h12 l12 16 l12 -16 h12 v50 h-12 v-30 l-12 16 l-12 -16 v30 z" fill="#14202B"/>
+  <path d="M214 124 v-28" stroke="#14202B" stroke-width="0"/>
+  <text x="128" y="214" text-anchor="middle" font-family="Menlo, DejaVu Sans Mono, monospace" font-size="26" font-weight="700" fill="#9CDCFE">to .md</text>
+</svg>
