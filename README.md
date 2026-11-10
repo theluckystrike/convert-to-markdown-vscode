@@ -4,7 +4,7 @@ Zovo Pro: USD 19 once, every Zovo tool. Convert a whole folder, Extract images a
 
 Right-click a PDF, Word, PowerPoint, Excel, CSV, HTML, EPUB, ODT or RTF file in VS Code and pick Convert to Markdown. The Markdown opens beside the file, with headings, paragraphs, bold and italic, lists, tables, links, code blocks, slide sections and speaker notes. Nothing to install: no Python, no server, no command-line tool. Nothing leaves your computer.
 
-![PDF to Markdown: a two-page report converted in VS Code, with its headings, paragraphs, a table and a list](images/pdf-to-markdown.png)
+![PDF to Markdown: a two-page IRS publication converted in VS Code, the Markdown beside its preview](images/pdf-to-markdown.png)
 
 ## Formats
 
@@ -45,7 +45,7 @@ Zovo Pro adds three tools. Each has 3 free tries on your computer; a try counts 
 
 Zovo Pro is USD 19 once and turns on the Pro tools in every Zovo extension. To hide the three Pro commands, set `toMarkdown.showProTools` to `false`.
 
-![DOCX to Markdown: a Word file with headings, lists and a table, converted beside the source](images/docx-to-markdown.png)
+![DOCX to Markdown: a Word file with headings, lists and a table, converted, with the Markdown preview beside it](images/docx-to-markdown.png)
 
 ## Safe with any file
 

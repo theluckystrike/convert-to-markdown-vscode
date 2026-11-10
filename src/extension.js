@@ -172,12 +172,19 @@ function summary(r) {
   return parts.join(', ');
 }
 
+// The real-app gate sets ZOVO_TOMD_TEST_CLIPBOARD to a file so the system clipboard is never touched in a test run.
+async function writeClipboard(text) {
+  const f = process.env.ZOVO_TOMD_TEST_CLIPBOARD;
+  if (f && path.isAbsolute(f)) { await fs.promises.writeFile(f, text, 'utf8'); return; }
+  await vscode.env.clipboard.writeText(text);
+}
+
 async function copyCommand(arg) {
   const uri = await targetOf(arg, 'Copy as Markdown');
   if (!uri) return;
   const r = await convertWithProgress(uri);
   if (!r) return;
-  await vscode.env.clipboard.writeText(r.markdown);
+  await writeClipboard(r.markdown);
   vscode.window.setStatusBarMessage(`Copied ${baseName(uri)} as Markdown (${r.markdown.length.toLocaleString('en-US')} characters).`, 8000);
   showNotes(baseName(uri), r);
   if (isSample(uri)) rating.success({ sample: true }); else rating.success(uri);

@@ -113,6 +113,10 @@ test('Word: broken XML, a .doc that is random bytes and an empty file give messa
   const rnd = Buffer.alloc(4096); for (let i = 0; i < rnd.length; i++) rnd[i] = (i * 7919) & 255;
   const e2 = await fails(rnd, 'random.docx');
   assert.strictEqual(e2.code, 'REFUSED');
+  // XML that is cut inside a tag: a "damaged" warning (REFUSED), not a converter error
+  const e3 = await fails(B.docx({ body: '<w:p><w:r><w:t>unclosed <<<' }), 'broken-xml.docx');
+  assert.strictEqual(e3.code, 'REFUSED');
+  assert.match(e3.message, /^The Word file is damaged and could not be read \(/);
 });
 
 test('Password-protected Office file and old PowerPoint give a clear message', async () => {

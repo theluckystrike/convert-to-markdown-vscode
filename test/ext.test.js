@@ -84,6 +84,13 @@ test('Output = file saves name.md next to the source; an existing file asks Repl
     await s.commands.get('toMarkdown.copyAsMarkdown')(s.vscode.Uri.file(PDF));
     assert.match(s.log.clipboard, /^# Quarterly Water Report/);
     assert.ok(s.log.status.some((t) => /Copied report\.pdf as Markdown/.test(t)));
+    // the gate's test clipboard file (ZOVO_TOMD_TEST_CLIPBOARD): the system clipboard is not used
+    const clip = path.join(dir, 'clip.txt');
+    s.log.clipboard = '';
+    process.env.ZOVO_TOMD_TEST_CLIPBOARD = clip;
+    try { await s.commands.get('toMarkdown.copyAsMarkdown')(s.vscode.Uri.file(PDF)); } finally { delete process.env.ZOVO_TOMD_TEST_CLIPBOARD; }
+    assert.match(fs.readFileSync(clip, 'utf8'), /^# Quarterly Water Report/);
+    assert.strictEqual(s.log.clipboard, '');
   } finally { s.restore(); }
 });
 

@@ -20,6 +20,9 @@ const CONVERTERS = {
   tsv: () => require('./sheets').tsv,
 };
 
+const DAMAGED = /xmldom|xml|parse error|unexpected (end|<|token|character)|unclosed|central directory|invalid (zip|signature|distance|block|stored)|corrupt|end of data|unexpected eof/i;
+const LABEL = { docx: 'Word file', pptx: 'PowerPoint file', odt: 'OpenDocument file', epub: 'EPUB book', xlsx: 'Excel file', ods: 'OpenDocument sheet', xls: 'Excel file', html: 'web page', rtf: 'RTF file', doc: 'Word file' };
+
 function refused(msg) { const e = new Error(msg); e.code = 'REFUSED'; return e; }
 
 /**
@@ -35,6 +38,9 @@ async function convert(buf, opts = {}) {
     r = await CONVERTERS[d.kind]()(buf, ctx);
   } catch (e) {
     if (e && e.code) throw e;
+    const msg = String((e && e.message) || e);
+    // malformed XML or a broken ZIP inside the file: a damaged file, not a converter failure
+    if (DAMAGED.test(msg)) throw refused(`The ${LABEL[d.kind] || 'file'} is damaged and could not be read (${msg.replace(/\s+/g, ' ').slice(0, 120)}). Open it in its app, save it again and convert that copy.`);
     const err = new Error(`${String((e && e.message) || e).slice(0, 300)}`);
     err.code = 'CONVERT';
     throw err;
