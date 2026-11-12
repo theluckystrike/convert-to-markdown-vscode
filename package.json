@@ -1,8 +1,8 @@
 {
   "name": "zovo-convert-to-markdown",
-  "displayName": "Convert to Markdown: PDF to Markdown, PPTX to Markdown, DOCX to Markdown",
-  "description": "Convert to Markdown inside VS Code: PDF to Markdown, Word (DOCX) to Markdown and PowerPoint (PPTX) to Markdown, plus Excel, CSV, HTML, EPUB, ODT and RTF. Right-click a file and get clean Markdown with headings, lists, tables, links and slide notes. Nothing to install, no Python, no network.",
-  "version": "0.1.0",
+  "displayName": "Convert to Markdown: PDF, DOCX",
+  "description": "Convert to Markdown in VS Code: PDF, Word (DOCX), PowerPoint (PPTX), Excel, CSV, HTML, EPUB, ODT and RTF files become clean Markdown with headings, lists, tables, links and slide notes. Right-click a file. Nothing to install, no Python, no network.",
+  "version": "0.1.1",
   "publisher": "zovo",
   "license": "MIT",
   "icon": "icon.png",
@@ -29,21 +29,9 @@
   "keywords": [
     "convert to markdown",
     "pdf to markdown",
-    "pptx to markdown",
     "docx to markdown",
-    "word to markdown",
-    "powerpoint to markdown",
-    "office to markdown",
-    "document to markdown",
-    "file to markdown",
-    "html to markdown",
-    "epub to markdown",
-    "excel to markdown",
-    "csv to markdown",
-    "markdown converter",
-    "md",
-    "llm",
-    "rag"
+    "pptx to markdown",
+    "markdown converter"
   ],
   "main": "./src/extension.js",
   "activationEvents": [],
@@ -133,6 +121,18 @@
         "command": "toMarkdown.payByCard",
         "title": "Pay for Zovo Pro by card (USD 19)",
         "category": "Zovo Pro"
+      },
+      {
+        "command": "toMarkdown.zovoPro.folder",
+        "title": "Zovo Pro: Convert a Folder to Markdown"
+      },
+      {
+        "command": "toMarkdown.zovoPro.images",
+        "title": "Zovo Pro: Convert to Markdown with Images"
+      },
+      {
+        "command": "toMarkdown.zovoPro.llm",
+        "title": "Zovo Pro: Convert to LLM-ready Markdown Chunks"
       }
     ],
     "menus": {
@@ -148,17 +148,17 @@
           "group": "6_copypath@90"
         },
         {
-          "command": "toMarkdown.convertWithImages",
+          "command": "toMarkdown.zovoPro.images",
           "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|pptx|pptm|ppsx|potx|odt|ott|epub|html|htm|xhtml)$/i && config.toMarkdown.showProTools",
           "group": "navigation@91"
         },
         {
-          "command": "toMarkdown.convertForLlm",
+          "command": "toMarkdown.zovoPro.llm",
           "when": "!explorerResourceIsFolder && resourceExtname =~ /^\\.(pdf|docx|docm|dotx|dotm|doc|dot|odt|ott|rtf|pptx|pptm|ppsx|ppsm|potx|xlsx|xlsm|xlsb|xls|ods|csv|tsv|html|htm|xhtml|epub)$/i && config.toMarkdown.showProTools",
           "group": "navigation@92"
         },
         {
-          "command": "toMarkdown.convertFolder",
+          "command": "toMarkdown.zovoPro.folder",
           "when": "explorerResourceIsFolder && config.toMarkdown.showProTools",
           "group": "navigation@90"
         }
@@ -187,6 +187,18 @@
         {
           "command": "toMarkdown.convertForLlm",
           "when": "config.toMarkdown.showProTools"
+        },
+        {
+          "command": "toMarkdown.zovoPro.folder",
+          "when": "false"
+        },
+        {
+          "command": "toMarkdown.zovoPro.images",
+          "when": "false"
+        },
+        {
+          "command": "toMarkdown.zovoPro.llm",
+          "when": "false"
         }
       ]
     },

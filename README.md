@@ -1,10 +1,17 @@
-# Convert to Markdown for PDF, PPTX, DOCX, Excel and HTML files
+# Convert to Markdown: PDF, DOCX
 
-Zovo Pro: USD 19 once, every Zovo tool. Convert a whole folder, Extract images and LLM-ready output are Pro, with 3 free tries each; converting single files stays free.
-
-Right-click a PDF, Word, PowerPoint, Excel, CSV, HTML, EPUB, ODT or RTF file in VS Code and pick Convert to Markdown. The Markdown opens beside the file, with headings, paragraphs, bold and italic, lists, tables, links, code blocks, slide sections and speaker notes. Nothing to install: no Python, no server, no command-line tool. Nothing leaves your computer.
+Convert PDF, Word, PowerPoint, Excel and other files to Markdown inside VS Code. Right-click a file and pick Convert to Markdown: the Markdown opens beside it.
 
 ![PDF to Markdown: a two-page IRS publication converted in VS Code, the Markdown beside its preview](images/pdf-to-markdown.png)
+
+Free, with no limit:
+
+- Convert to Markdown and Copy as Markdown for PDF, DOCX, PPTX, XLSX, XLS, ODS, CSV, HTML, EPUB, ODT and RTF files.
+- Headings, paragraphs, lists, tables, links, code blocks, one section per slide and the speaker notes.
+- Nothing to install: no Python, no server, no command-line tool. Nothing leaves your computer.
+- Each file is converted in a worker thread with a memory cap and Cancel, so a damaged or huge file cannot freeze VS Code.
+
+Zovo Pro: USD 19 once, for the Pro tools in every Zovo extension. Here it adds Convert a Folder to Markdown, Convert to Markdown with Images and LLM-ready Markdown Chunks, with 3 free tries each on your computer. Right-click a folder or file in the Explorer and pick an entry that starts with "Zovo Pro:".
 
 ## Formats
 
@@ -96,7 +103,7 @@ Zovo extensions have no ads and no tracking. They are made by [theluckystrike](h
 
 ### Need your format supported?
 
-Open a [format request](https://github.com/theluckystrike/convert-to-markdown-vscode/issues/new?template=format-request.yml) with a sample file, and I reply there whether it can be done. For USD 299 once, through [this GitHub Sponsors tier](https://github.com/sponsors/theluckystrike/sponsorships?tier_id=679995), I add your file format or a missing feature to this extension, with tests, within 7 days.
+Open a [format request](https://github.com/theluckystrike/convert-to-markdown-vscode/issues/new?template=format-request.yml) with a sample file, and I reply there whether it can be done.
 
 ## More tools by Zovo
 

@@ -12,6 +12,8 @@ const llm = require('./core/llm');
 const { createPro } = require('./pro');
 const { createRatingPrompt } = require('./rate');
 const { registerSupport } = require('./support');
+const { createReach } = require('./reach');
+const reachConfig = require('./reach-config');
 
 const EXT_ID = 'zovo.zovo-convert-to-markdown';
 const PREFIX = 'toMarkdown';
@@ -408,9 +410,14 @@ function activate(context) {
   const reg = (id, fn) => context.subscriptions.push(vscode.commands.registerCommand(id, fn));
   reg(`${PREFIX}.convert`, (uri, all) => convertCommand(uri, all));
   reg(`${PREFIX}.copyAsMarkdown`, (uri) => copyCommand(uri));
-  reg(`${PREFIX}.convertFolder`, (uri) => folderCommand(uri));
-  reg(`${PREFIX}.convertWithImages`, (uri) => imagesCommand(uri));
-  reg(`${PREFIX}.convertForLlm`, (uri) => llmCommand(uri));
+  // REACH1: no viewer or webview here (the Markdown opens as a text document), so no toolbar row. The Explorer entries
+  // of the 3 Pro tools are the "Zovo Pro: <tool>" wrappers (same file types and folders as before); they run the tool on
+  // the clicked file or folder and tag a card link <install id>_ctx.
+  const reach = createReach({ vscode, context, ...reachConfig, licensed: () => pro.licensed, shown: () => setting('showProTools', true) });
+  reach.registerCtx();
+  reg(`${PREFIX}.convertFolder`, reach.wrap((uri) => folderCommand(uri)));
+  reg(`${PREFIX}.convertWithImages`, reach.wrap((uri) => imagesCommand(uri)));
+  reg(`${PREFIX}.convertForLlm`, reach.wrap((uri) => llmCommand(uri)));
   reg(`${PREFIX}.convertSample`, async (which) => {
     const n = { pdf: 'sample-report.pdf', pptx: 'sample-slides.pptx' }[which] || 'sample-plan.docx';
     await convertCommand(vscode.Uri.joinPath(context.extensionUri, 'samples', n));
