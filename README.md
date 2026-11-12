@@ -1,4 +1,4 @@
-# Convert to Markdown: PDF, DOCX
+# Convert to Markdown (PDF, DOCX and more)
 
 Convert PDF, Word, PowerPoint, Excel and other files to Markdown inside VS Code. Right-click a file and pick Convert to Markdown: the Markdown opens beside it.
 
